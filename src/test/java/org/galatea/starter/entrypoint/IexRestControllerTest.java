@@ -5,7 +5,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
+import java.util.Date;
+import java.util.Locale;
 import junitparams.JUnitParamsRunner;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -79,6 +85,27 @@ public class IexRestControllerTest extends ASpringTest {
             .accept(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$", is(Collections.emptyList())))
+        .andReturn();
+  }
+
+  @Test
+  public void testGetHistoricalPrices() throws Exception {
+    // Code left commented out in case we wish to eventually check for exactly matching DateTime
+    // DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-dd-mm", Locale.US);
+    MvcResult result = this.mvc.perform(
+            org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+                .get("/iex/historicalPrices?symbol=twtr&range=date&date=20210823")
+                // This URL will be hit by the MockMvc client. The result is configured in the file
+                // src/test/resources/wiremock/mappings/mapping-historicalPrices.json
+                .accept(MediaType.APPLICATION_JSON_VALUE))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$[0].close").value(new BigDecimal("64.13")))
+        .andExpect(jsonPath("$[0].high").value(new BigDecimal("64.555")))
+        .andExpect(jsonPath("$[0].low").value(new BigDecimal("63.06")))
+        .andExpect(jsonPath("$[0].open").value(new BigDecimal("63.2")))
+        .andExpect(jsonPath("$[0].symbol", is("TWTR")))
+        .andExpect(jsonPath("$[0].volume").value(new BigDecimal("9962350")))
+        //.andExpect(jsonPath("$[0].date").value(LocalDate.parse("2021-08-23",formatter)))
         .andReturn();
   }
 }
