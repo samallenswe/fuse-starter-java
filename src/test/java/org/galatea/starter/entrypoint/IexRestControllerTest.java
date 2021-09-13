@@ -89,7 +89,7 @@ public class IexRestControllerTest extends ASpringTest {
   }
 
   @Test
-  public void testGetHistoricalPrices() throws Exception {
+  public void testGetHistoricalPricesDate() throws Exception {
     // Code left commented out in case we wish to eventually check for exactly matching DateTime
     // DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-dd-mm", Locale.US);
     MvcResult result = this.mvc.perform(
@@ -106,6 +106,24 @@ public class IexRestControllerTest extends ASpringTest {
         .andExpect(jsonPath("$[0].symbol", is("TWTR")))
         .andExpect(jsonPath("$[0].volume").value(new BigDecimal("9962350")))
         //.andExpect(jsonPath("$[0].date").value(LocalDate.parse("2021-08-23",formatter)))
+        .andReturn();
+  }
+
+  @Test
+  public void testGetHistoricalPricesNoDate() throws Exception {
+    MvcResult result = this.mvc.perform(
+            org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+                .get("/iex/historicalPrices?symbol=twtr&range=5d")
+                // This URL will be hit by the MockMvc client. The result is configured in the file
+                // src/test/resources/wiremock/mappings/mapping-historicalPricesNoDate.json
+                .accept(MediaType.APPLICATION_JSON_VALUE))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$[0].close").value(new BigDecimal("62.27")))
+        .andExpect(jsonPath("$[0].high").value(new BigDecimal("65.3615")))
+        .andExpect(jsonPath("$[0].low").value(new BigDecimal("62.08")))
+        .andExpect(jsonPath("$[0].open").value(new BigDecimal("64.935")))
+        .andExpect(jsonPath("$[0].symbol", is("TWTR")))
+        .andExpect(jsonPath("$[0].volume").value(new BigDecimal("11767221")))
         .andReturn();
   }
 }

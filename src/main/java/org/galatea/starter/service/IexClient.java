@@ -37,4 +37,7 @@ public interface IexClient {
   @GetMapping("/stable/stock/{symbol}/chart/{range}/{date}?chartByDay=true")
   List<IexHistoricalPrices> getHistoricalPrices(@PathVariable("symbol") String symbol, @PathVariable("range") String dateRange, @PathVariable("date") String date);
 
+  @GetMapping("/stable/stock/{symbol}/chart/{range}?chartByDay=true")
+  List<IexHistoricalPrices> getHistoricalPricesNoDate(@PathVariable("symbol") String symbol, @PathVariable("range") String dateRange);
+
 }
